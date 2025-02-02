@@ -3,11 +3,10 @@
 //
 #define SDL_MAIN_USE_CALLBACKS 1
 
+#include "vendor/glad./include/glad/glad.h"
 #include "SDL3/SDL.h"
 #include "SDL3/SDL_main.h"
-#include "SDL3/SDL_opengl.h"
 #include <iostream>
-
 
 #define WINDOW_TITLE "OpenGL"
 #define WINDOW_W 800
@@ -17,7 +16,7 @@
 
 struct AppContext{
     SDL_Window* window;
-    SDL_Renderer* renderer;
+    SDL_GLContext main_context;
 };
 
 //startup
@@ -30,22 +29,42 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char* argv[]){
         return SDL_APP_FAILURE;
     }
 
+
+    SDL_GL_LoadLibrary(NULL);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
     SDL_Window* window = SDL_CreateWindow(WINDOW_TITLE, WINDOW_W, WINDOW_H, SDL_WINDOW_OPENGL);
     if(!window){
         SDL_Log("Couldn't create window: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
-    if(!renderer){
-        SDL_Log("Couldn't create renderer: %s", SDL_GetError());
+    SDL_GLContext maincontext = SDL_GL_CreateContext(window);
+    if(!maincontext){
+        SDL_Log("Couldn't create OpenGL context: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
+    gladLoadGLLoader((GLADloadproc) SDL_GL_GetProcAddress);
+
+    SDL_Log("Vendor: %s", glGetString(GL_VENDOR));
+    SDL_Log("Renderer: %s", glGetString(GL_RENDERER));
+    SDL_Log("Version: %s", glGetString(GL_VERSION));
+
+    SDL_GL_SetSwapInterval(1);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
 
     *appstate = new AppContext{
         window,
-        renderer
+        maincontext,
     };
+
+
 
     SDL_Log("Application started successfully");
 
@@ -64,13 +83,16 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event *event){
 SDL_AppResult SDL_AppIterate(void* appstate){
     auto* app = (AppContext*) appstate;
 
-    const double now = ((double)SDL_GetTicks()) / 1000.0;  /* convert from milliseconds to seconds. */
-    /* choose the color for the frame we will draw. The sine wave trick makes it fade between colors smoothly. */
-    const auto red = (float) (0.5 + 0.5 * SDL_sin(now));
-    const auto green = (float) (0.5 + 0.5 * SDL_sin(now + SDL_PI_D * 2 / 3));
-    const auto blue = (float) (0.5 + 0.5 * SDL_sin(now + SDL_PI_D * 4 / 3));
+    const double now = ((double)SDL_GetTicks()) / 1000.0;
 
-    glClearColor(red, green, blue, 1.0);
+    glViewport(0, 0, WINDOW_W, WINDOW_H);
+
+
+    //RENDER
+
+
+
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
 
@@ -84,7 +106,6 @@ void SDL_AppQuit(void* appstate, SDL_AppResult result){
     //clean up if needed
     auto* app = (AppContext*)appstate;
     if(app){
-        SDL_DestroyRenderer(app->renderer);
         SDL_DestroyWindow(app->window);
         delete app;
     }

@@ -4,8 +4,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
 project(OpenGL)
-add_executable(OpenGL main.cpp)
-
+add_executable(OpenGL main.cpp vendor/glad./src/glad.c)
+target_include_directories(OpenGL PRIVATE vendor/glad./include)
 set(SDL_STATIC True)
 set(SDL_EXAMPLES True)
 
