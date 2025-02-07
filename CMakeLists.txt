@@ -11,5 +11,3 @@ set(SDL_EXAMPLES True)
 target_include_directories(OpenGL PRIVATE vendor/glad./include PRIVATE vendor/glm)
 target_link_libraries(OpenGL PRIVATE SDL3::SDL3-static)
 add_subdirectory(vendor/SDL)
-
-
