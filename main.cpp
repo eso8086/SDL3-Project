@@ -3,7 +3,8 @@
 //
 #define SDL_MAIN_USE_CALLBACKS 1
 
-#include "vendor/glad./include/glad/glad.h"
+#include "glad/glad.h"
+#include "glm/glm.hpp"
 #include "SDL3/SDL.h"
 #include "SDL3/SDL_main.h"
 #include <iostream>
@@ -11,7 +12,6 @@
 #define WINDOW_TITLE "OpenGL"
 #define WINDOW_W 800
 #define WINDOW_H 600
-
 
 
 struct AppContext{
