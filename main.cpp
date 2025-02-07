@@ -41,7 +41,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char* argv[]){
         SDL_Log("Couldn't create window: %s", SDL_GetError());
         return SDL_APP_FAILURE;
     }
-
+    SDL_SetWindowPosition(app.window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
     app.gl_context = SDL_GL_CreateContext(app.window);
     if(!app.gl_context){
