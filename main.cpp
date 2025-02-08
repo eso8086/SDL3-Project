@@ -88,7 +88,7 @@ SDL_AppResult SDL_AppIterate(void* appstate){
 
 //clean up
 void SDL_AppQuit(void* appstate, SDL_AppResult result){
-    if(result != SDL_APP_SUCCESS){
+    if(result == SDL_APP_SUCCESS){
         SDL_Log("Application quit successfully");
     }
     else{
